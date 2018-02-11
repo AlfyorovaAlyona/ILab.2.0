@@ -1,32 +1,24 @@
 #include "tree.h"
 #include <stdio.h>
 
-const int N1 = 10;
-const int N2 = 20;
+
 int main() {
-    int Roo, i;
-    printf("Enter a root\n");
+    int Roo, l, r;
+
     /*system("espeak Enter");
     system("espeak a");
     system("espeak root");*/
+
     scanf("%d", &Roo);
     Node* root = create_node_dynamic(Roo);
-    printf("CreateNodeDynamic: root = %d\n", root->value);
-    Node* current1 = root;
-    Node* current2 = root;
-
-    for(i = 0; i < N1; i++)
+    Node* cur = root;
+    for(int i = 1; i < 10; i++)
     {
-        add_left(root, i);
-        root = root->left;
+        add_right(root, i);
+        add_left(root, 10*i);
+        root = root->right;
     }
-    for(i = N1; i < N2; i++)
-    {
-        add_right(current1, i);
-        current1 = current1->right;
-    }
-
-    print_node(current2);
-    dotTree(current2);
+    print_node(cur);
+    dotTree(cur);
     return 0;
 }

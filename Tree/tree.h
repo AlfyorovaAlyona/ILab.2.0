@@ -6,6 +6,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 typedef struct Node
 {
@@ -20,3 +21,4 @@ void delete_subtree(Node* root);
 void print_node(Node* root);
 void add_right(Node* root, int value);
 void dotTree(Node* root);
+void print_dot(FILE* f, Node* root);

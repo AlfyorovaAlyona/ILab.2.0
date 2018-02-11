@@ -4,6 +4,7 @@
 
 #include "tree.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 Node* create_node_dynamic(int value)
 {
@@ -22,7 +23,6 @@ void add_left(Node* root, int value)
         delete_subtree(root->left);
     }
     root->left = left;
-
 }
 
 
@@ -55,16 +55,26 @@ void delete_subtree(Node* root)
 
 void print_node(Node* root)
 {
-    if(!root)
-        return;
-    printf(" ");
-    printf("(");
-    printf(" ");
-    printf("%d", root->value);
-    print_node(root->left);
-    print_node(root->right);
-    printf(" ");
-    printf(")");
+    FILE* f;
+    f = fopen("Input.txt", "w");
+    if (f)
+    {
+        if (!root)
+            return;
+        fprintf(f, "%s", " ");
+        fprintf(f, "%s", "(");
+        fprintf(f, "%s", " ");
+        fprintf(f, "%d", root->value);
+        print_node(root->left);
+        print_node(root->right);
+        fprintf(f, "%s", " ");
+        fprintf(f, "%s", ")");
+        fclose(f);
+    }
+    else
+    {
+        printf("Not found");
+    }
 }
 
 
@@ -78,31 +88,39 @@ void dotTree(Node* root)
         fprintf(f, "%s\n", "digraph G {");
         fprintf(f, "%s\n", "node[color=\"red\",fontsize=14];\n"
                 " edge[color=\"darkgreen\",fontcolor=\"blue\",fontsize=12];\n");
-        fprintf(f, "%d%s\n", root->value, "[style=bold, shape = rectangle ,style=filled];");
-        fprintf(f, "%d", root->value);
-        Node* current = root;
-        while(root->left)
-        {
-            fprintf(f, "->");
-            root = root->left;
-            fprintf(f, " %d ", root->value);
-        }
-        fprintf(f, "\n");
-        fprintf(f, "%d", current->value);
-
-        while(current->right)
-        {
-            fprintf(f, "->");
-            current = current->right;
-            fprintf(f, " %d ", current->value);
-        }
-        fprintf(f, ";\n");
+        print_dot(f, root);
         fprintf(f, "}");
     }
     else
     {
         printf("Not found\n");
     }
-
+    fclose(f);
     //system("dot tree-dot.txt -Tjpg -O");
 }
+
+void print_dot(FILE* f, Node* root)
+{
+    fprintf(f, "%d\n", root->value);
+    if(root->left != NULL)
+    {
+        fprintf(f,"%d%s%d\n", root->value, "->", root->left->value);
+        print_dot(f, root->left);
+    }
+
+    if(root->right != NULL)
+    {
+        fprintf(f,"%d%s%d\n", root->value, "->", root->right->value);
+        print_dot(f, root->right);
+    }
+}
+
+
+
+
+
+
+
+
+
+
