@@ -1,0 +1,18 @@
+digraph G {
+node[color="red",fontsize=14];
+ edge[color="darkgreen",fontcolor="blue",fontsize=12];
+
+Is it a human
+Is it a human->Is it an animal
+Is it an animal
+Is it an animal->cockroach
+cockroach
+Is it an animal->deer
+deer
+Is it a human->Is it a teacher
+Is it a teacher
+Is it a teacher->Bek
+Bek
+Is it a teacher->Lesha
+Lesha
+}
