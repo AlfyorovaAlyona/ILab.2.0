@@ -2,25 +2,6 @@
 // Created by alena on 06.03.18.
 //
 
-#include <iostream>
-#include <cassert>
-#include "node.h"
-
-#ifndef __DIFFERENTIATOR__
-#define __DIFFERENTIATOR__
-
-struct Differentiator
-{
-    Node* Diff(Node* root);
-    Node* FuncDiff(Node* root);
-    Node* diffplus(Node* root);
-    Node* diffmult(Node* root);
-    Node* diffres(Node* root);
-    Node* VarsDiff(Node* root);
-    Node* NumDiff(Node* root);
-};
-
-
 Node* Differentiator :: Diff(Node* root)
 {
     assert(root);
@@ -105,16 +86,24 @@ Node* Differentiator :: diffmult(Node* root)
         diffprod->add_left(FUNC, PROD);
         Node* tmp = diffprod->left;
         tmp->left = Diff(root->left);
-        tmp->right = root->right;
+        tmp->right = copy(root->right);
     }
     if (root->right)
     {
         diffprod->add_right(FUNC, PROD);
         Node* tmp = diffprod->right;
         tmp->left = Diff(root->right);
-        tmp->right = root->left;
+        tmp->right = copy(root->left);
     }
     return diffprod;
+}
+
+
+Node* Differentiator :: copy(Node* root)
+{
+    Node* copy_root = new Node(root->flag, root->value);
+    copy_root = root;
+    return copy_root;
 }
 
 
@@ -141,5 +130,3 @@ Node* Differentiator :: NumDiff(Node* root)
     Node* difnum = new Node(NUM, 0);
     return difnum;
 }
-
-#endif //__DIFFERENTIATOR__
