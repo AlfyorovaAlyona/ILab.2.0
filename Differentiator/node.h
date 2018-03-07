@@ -35,12 +35,17 @@ struct Node {
     int value;
 
     Node(int fl, int val); //constructor
+
     Node* add_left(int fl, int val);
     Node* add_right(int fl, int val);
-    void PRINT();
-    void print();
+    void print_in_tex();
+    void print_node_in_tex(FILE* f);
+    void func_tex(FILE* f);
+    void vars_tex(FILE* f);
+    void num_tex(FILE* f);
     void dot();
     void print_in_dot(FILE* f);
+
     ~Node(); //distructor
 };
 #include "node.cpp"

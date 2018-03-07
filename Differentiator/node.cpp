@@ -1,6 +1,7 @@
 //
 // Created by alena on 06.03.18.
 //
+
 Node :: Node(int fl, int val)
 {
     flag = fl;
@@ -22,27 +23,86 @@ Node* Node :: add_right(int fl, int val)
 }
 
 
-void Node :: print()
+void Node :: print_in_tex()
 {
     FILE* f;
-    f = fopen("Input.txt", "wt");
+    f = fopen("file.tex", "at");
     if (f)
     {
-
-        fprintf(f, "%s", " ");
-        fprintf(f, "%s", "(");
-        fprintf(f, "%s", " ");
-        fprintf(f, "%d%d", flag, value);
-        left->print();
-        right->print();
-        fprintf(f, "%s", " ");
-        fprintf(f, "%s", ")");
+        fprintf(f,"\n");
+        fprintf(f, "%s", " \\[ ");
+        print_node_in_tex(f);
+        fprintf(f, "%s\n", " \\] \\\\");
         fclose(f);
     }
     else
     {
         printf("file is not found\n");
     }
+}
+
+
+void Node :: print_node_in_tex(FILE* f)
+{
+    if (left)
+        left->print_node_in_tex(f);
+    switch(flag)
+    {
+        case FUNC:
+            func_tex(f);
+            break;
+        case VARS:
+            vars_tex(f);
+            break;
+        case NUM:
+            num_tex(f);
+            break;
+        default:
+            printf("Wrong flag\n");
+    }
+    if (right)
+        right->print_node_in_tex(f);
+}
+
+
+void Node :: func_tex(FILE* f)
+{
+    switch(value)
+    {
+        case PLUS:
+            fprintf(f," + ");
+            break;
+        case MINUS:
+            fprintf(f, " - ");
+            break;
+        case PROD:
+            fprintf(f, " \\cdot ");
+            break;
+        default:
+            printf("Wrong func\n");
+    }
+}
+
+
+void Node :: vars_tex(FILE* f)
+{
+    switch(value)
+    {
+        case X_FLAG:
+            fprintf(f, " x ");
+            break;
+        case Y_FLAG:
+            fprintf(f, " y ");
+            break;
+        default:
+            printf("Wrong var\n");
+    }
+}
+
+
+void Node :: num_tex(FILE* f)
+{
+    fprintf(f, "%d", value);
 }
 
 
@@ -79,12 +139,6 @@ void Node :: print_in_dot(FILE *f)
         fprintf(f, "%d%d%s%d%d\n", flag, value, "->", right->flag, right->value);
         right->print_in_dot(f);
     }
-}
-
-
-void Node :: PRINT()
-{
-    printf("flag = %d, value = %d", flag, value);
 }
 
 
