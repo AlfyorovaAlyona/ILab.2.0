@@ -38,7 +38,7 @@ struct Node {
 
     Node* add_left(int fl, int val);
     Node* add_right(int fl, int val);
-    void print_in_tex();
+    void print_in_tex(FILE* f);
     void print_node_in_tex(FILE* f);
     void func_tex(FILE* f);
     void vars_tex(FILE* f);

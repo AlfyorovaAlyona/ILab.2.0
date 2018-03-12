@@ -4,6 +4,8 @@
 int main()
 {
     FILE* f;
+    f = fopen("file.tex", "at");
+
     Node* root = new Node(FUNC, PLUS);
     Node* diffroot;
 
@@ -18,19 +20,16 @@ int main()
     root->right->right->add_right(VARS, X_FLAG);
     root->right->right->add_left(VARS, X_FLAG);
 
-    root->print_in_tex();
+    root->print_in_tex(f);
 
     Differentiator differ;
     diffroot = differ.Diff(root);
 
-    f = fopen("file.tex", "at");
     fprintf(f, "Результат:");
-    fclose(f);
 
     diffroot->dot();
-    diffroot->print_in_tex();
+    diffroot->print_in_tex(f);
 
-    f = fopen("file.tex", "at");
     fprintf(f, "\\end{document}");
     fclose(f);
     return 0;

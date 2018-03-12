@@ -119,7 +119,7 @@ Node* Differentiator :: VarsDiff(Node* root)
             difvar = new Node(NUM, 1);
             break;
         default:
-            printf("Wrong var\n");
+            printf("Error var\n");
     }
     return difvar;
 }

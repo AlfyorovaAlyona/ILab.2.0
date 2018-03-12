@@ -23,17 +23,14 @@ Node* Node :: add_right(int fl, int val)
 }
 
 
-void Node :: print_in_tex()
+void Node :: print_in_tex(FILE* f)
 {
-    FILE* f;
-    f = fopen("file.tex", "at");
     if (f)
     {
         fprintf(f,"\n");
         fprintf(f, "%s", " \\[ ");
         print_node_in_tex(f);
         fprintf(f, "%s\n", " \\] \\\\");
-        fclose(f);
     }
     else
     {
@@ -128,15 +125,15 @@ void Node :: dot()
 
 void Node :: print_in_dot(FILE *f)
 {
-    fprintf(f, "%d%d\n", flag, value);
+    fprintf(f, "%d%d\n", &flag, &value);
     if (left)
     {
-        fprintf(f, "%d%d%s%d%d\n", flag, value, "->", left->flag, left->value);
+        fprintf(f, "%d%d%s%d%d\n", &flag, &value, "->", &left->flag, &left->value);
         left->print_in_dot(f);
     }
     if (right)
     {
-        fprintf(f, "%d%d%s%d%d\n", flag, value, "->", right->flag, right->value);
+        fprintf(f, "%d%d%s%d%d\n", &flag, &value, "->", &right->flag, &right->value);
         right->print_in_dot(f);
     }
 }
@@ -147,12 +144,12 @@ Node::~Node()
     if (left)
     {
         delete left;
-        left = nullptr;
+        left = NULL;
     }
     if (right)
     {
         delete right;
-        right = nullptr;
+        right = NULL;
     }
 }
 
