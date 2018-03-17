@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <stdlib.h>
 #include <cassert>
 
 #ifndef __NODE__
@@ -12,14 +13,14 @@ enum FLAG
 {
     FUNC = 8,
     NUM = 9,
-    VARS = 10
+    VARS = 10,
 };
 
 enum FUNC
 {
     PLUS = 5,
     MINUS = 6,
-    PROD = 7
+    PROD = 7,
 };
 
 enum VARS
@@ -43,8 +44,9 @@ struct Node {
     void func_tex(FILE* f);
     void vars_tex(FILE* f);
     void num_tex(FILE* f);
-    void dot();
+    void dot(FILE* f);
     void print_in_dot(FILE* f);
+    const char* inDot();
 
     ~Node(); //distructor
 };

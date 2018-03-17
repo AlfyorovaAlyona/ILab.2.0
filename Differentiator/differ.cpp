@@ -5,7 +5,7 @@
 Node* Differentiator :: Diff(Node* root)
 {
     assert(root);
-    Node* diffroot = nullptr;
+    Node* diffroot = NULL;
     switch(root->flag)
     {
         case FUNC:
@@ -26,20 +26,23 @@ Node* Differentiator :: Diff(Node* root)
 
 Node* Differentiator :: FuncDiff(Node* root)
 {
-    Node* difun = nullptr;
+    Node* difun = NULL;
     switch(root->value)
     {
-        case PLUS:
+        case PLUS: {
             difun = diffplus(root);
             break;
+        }
 
-        case MINUS:
+        case MINUS: {
             difun = diffres(root);
             break;
+        }
 
-        case PROD:
+        case PROD: {
             difun = diffmult(root);
             break;
+        }
 
         default:
             printf("Error function\n");
@@ -102,22 +105,31 @@ Node* Differentiator :: diffmult(Node* root)
 Node* Differentiator :: copy(Node* root)
 {
     Node* copy_root = new Node(root->flag, root->value);
-    copy_root = root;
+    if (root->right)
+    {
+        copy_root->right = copy(root->right);
+    }
+    if (root->left)
+    {
+        copy_root->left = copy(root->left);
+    }
     return copy_root;
 }
 
 
 Node* Differentiator :: VarsDiff(Node* root)
 {
-    Node* difvar = nullptr;
-    switch(root->value)
+    Node* difvar = NULL;
+    switch (root->value)
     {
-        case X_FLAG:
+        case X_FLAG: {
             difvar = new Node(NUM, 1);
             break;
-        case Y_FLAG:
+        }
+        case Y_FLAG: {
             difvar = new Node(NUM, 1);
             break;
+        }
         default:
             printf("Error var\n");
     }

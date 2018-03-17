@@ -103,10 +103,8 @@ void Node :: num_tex(FILE* f)
 }
 
 
-void Node :: dot()
+void Node :: dot(FILE* f)
 {
-    FILE* f;
-    f = fopen("tree-dot.txt", "wt");
     if (f)
     {
         fprintf(f, "%s\n", "digraph G {");
@@ -125,17 +123,85 @@ void Node :: dot()
 
 void Node :: print_in_dot(FILE *f)
 {
-    fprintf(f, "%d%d\n", &flag, &value);
+    const char* label;
+    if (flag == NUM)
+    {
+        fprintf(f,"e_%x[label=\"%d\"];\n", this, value);
+    }
+    else
+    {
+        label = inDot();
+        fprintf(f,"e_%x[label=\"%s\"];\n", this, label);
+    }
+
     if (left)
     {
-        fprintf(f, "%d%d%s%d%d\n", &flag, &value, "->", &left->flag, &left->value);
+        fprintf(f, "e_%x -> e_%x;\n", this, left);
         left->print_in_dot(f);
     }
     if (right)
     {
-        fprintf(f, "%d%d%s%d%d\n", &flag, &value, "->", &right->flag, &right->value);
+        fprintf(f, "e_%x -> e_%x;\n", this, right);
         right->print_in_dot(f);
     }
+}
+
+
+const char* Node :: inDot()
+{
+    const char* label;
+    switch(flag)
+    {
+        case FUNC:
+        {
+            switch(value)
+            {
+                case PLUS:
+                {
+                    label = "+";
+                    break;
+                }
+                case MINUS:
+                {
+                    label = "-";
+                    break;
+                }
+                case PROD:
+                {
+                    label = "*";
+                    break;
+                }
+                default: {
+                    printf("unknown func\n");
+                    break;
+                }
+            }
+            break;
+        }
+        case VARS:
+        {
+            switch(value)
+            {
+                case X_FLAG:
+                {
+                    label = "x";
+                    break;
+                }
+                case Y_FLAG:
+                {
+                    label = "y";
+                    break;
+                }
+            }
+            break;
+        }
+        default:
+        {
+            printf("Error flag%d\n", flag);
+            break;
+        }
+    }
+    return label;
 }
 
 

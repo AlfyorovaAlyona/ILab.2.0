@@ -1,37 +1,40 @@
+
 #include "node.h"
 #include "differ.h"
 
 int main()
 {
-    FILE* f;
-    f = fopen("file.tex", "at");
+    FILE* ftex;
+    FILE* fout;
+    FILE* fin;
+    ftex = fopen("file.tex", "at");
+    fout = fopen("root.txt", "wt");
+    fin = fopen("diffroot.txt", "wt");
 
-    Node* root = new Node(FUNC, PLUS);
+    Node* root = new Node(FUNC, PROD);
     Node* diffroot;
 
-    root->add_left(FUNC, PROD);
-    root->add_right(FUNC, MINUS);
-    root->left->add_left(VARS,X_FLAG);
-    root->left->add_right(VARS,X_FLAG);
-    root->right->add_left(FUNC , PROD);
-    root->right->add_right(FUNC , PLUS);
-    root->right->left->add_left(VARS, X_FLAG);
-    root->right->left->add_right(VARS, X_FLAG);
-    root->right->right->add_right(VARS, X_FLAG);
-    root->right->right->add_left(VARS, X_FLAG);
+    root->add_left(FUNC , PLUS);
+    root->add_right(FUNC , PROD);
+    root->left->add_left(NUM ,3000);
+    root->left->add_right(NUM ,9000);
+    root->right->add_left(VARS , X_FLAG);
+    root->right->add_right(VARS , X_FLAG);
 
-    root->print_in_tex(f);
+    root->dot(fout);
+
+    root->print_in_tex(ftex);
 
     Differentiator differ;
     diffroot = differ.Diff(root);
 
-    fprintf(f, "Результат:");
+    fprintf(ftex, "Результат:");
 
-    diffroot->dot();
-    diffroot->print_in_tex(f);
+    diffroot->dot(fin);
+    diffroot->print_in_tex(ftex);
 
-    fprintf(f, "\\end{document}");
-    fclose(f);
+    fprintf(ftex, "\\end{document}");
+    fclose(ftex);
     return 0;
 }
 
