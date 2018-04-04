@@ -7,11 +7,15 @@
 
 struct Differentiator
 {
-    Node* Diff(Node* root);
-    Node* FuncDiff(Node* root);
-    Node* diffplus(Node* root);
-    Node* diffmult(Node* root);
-    Node* diffres(Node* root);
+    Node* Diff(Node* root, FILE* f);
+    Node* FuncDiff(Node* root, FILE* f);
+    Node* diffplus(Node* root, FILE* f);
+    Node* diffmult(Node* root, FILE* f);
+    Node* diffres(Node* root, FILE* f);
+    Node* diffpart(Node* root, FILE* f);
+    Node* diffsin(Node* root, FILE* f);
+    Node* diffcos(Node* root, FILE* f);
+    Node* diffln(Node* root, FILE* f);
     Node* VarsDiff(Node* root);
     Node* NumDiff(Node* root);
     Node* copy(Node* root);

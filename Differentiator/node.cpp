@@ -6,8 +6,8 @@ Node :: Node(int fl, int val)
 {
     flag = fl;
     value = val;
-    left = nullptr;
-    right = nullptr;
+    left = NULL;
+    right = NULL;
 }
 
 
@@ -20,86 +20,6 @@ Node* Node :: add_left(int fl, int val)
 Node* Node :: add_right(int fl, int val)
 {
     right = new Node(fl, val);
-}
-
-
-void Node :: print_in_tex(FILE* f)
-{
-    if (f)
-    {
-        fprintf(f,"\n");
-        fprintf(f, "%s", " \\[ ");
-        print_node_in_tex(f);
-        fprintf(f, "%s\n", " \\] \\\\");
-    }
-    else
-    {
-        printf("file is not found\n");
-    }
-}
-
-
-void Node :: print_node_in_tex(FILE* f)
-{
-    if (left)
-        left->print_node_in_tex(f);
-    switch(flag)
-    {
-        case FUNC:
-            func_tex(f);
-            break;
-        case VARS:
-            vars_tex(f);
-            break;
-        case NUM:
-            num_tex(f);
-            break;
-        default:
-            printf("Wrong flag\n");
-    }
-    if (right)
-        right->print_node_in_tex(f);
-}
-
-
-void Node :: func_tex(FILE* f)
-{
-    switch(value)
-    {
-        case PLUS:
-            fprintf(f," + ");
-            break;
-        case MINUS:
-            fprintf(f, " - ");
-            break;
-        case PROD:
-            fprintf(f, " \\cdot ");
-            break;
-        default:
-            printf("Wrong func\n");
-    }
-}
-
-
-void Node :: vars_tex(FILE* f)
-{
-    switch(value)
-    {
-        case X_FLAG:
-            fprintf(f, " x ");
-            break;
-        case Y_FLAG:
-            fprintf(f, " y ");
-            break;
-        default:
-            printf("Wrong var\n");
-    }
-}
-
-
-void Node :: num_tex(FILE* f)
-{
-    fprintf(f, "%d", value);
 }
 
 
@@ -171,6 +91,26 @@ const char* Node :: inDot()
                     label = "*";
                     break;
                 }
+                case PART:
+                {
+                    label = "/";
+                    break;
+                }
+                case SIN:
+                {
+                    label = "sin";
+                    break;
+                }
+                case COS:
+                {
+                    label = "cos";
+                    break;
+                }
+                case LN:
+                {
+                    label = "ln";
+                    break;
+                }
                 default: {
                     printf("unknown func\n");
                     break;
@@ -197,7 +137,7 @@ const char* Node :: inDot()
         }
         default:
         {
-            printf("Error flag%d\n", flag);
+            printf("Error flag %d\n", flag);
             break;
         }
     }
@@ -205,7 +145,237 @@ const char* Node :: inDot()
 }
 
 
-Node::~Node()
+void Node :: opt_const()
+{
+    _OPTIMIZATION_ = false;
+    if (left)
+    {
+        left->opt_const();
+    }
+    if (right)
+    {
+        right->opt_const();
+    }
+
+    if (flag == FUNC && left && right && left->flag == NUM && right->flag == NUM)
+    {
+        switch(value)
+        {
+            case PLUS:
+            {
+                flag = NUM;
+                value = left->value + right->value;
+                delete left;
+                delete right;
+                left = NULL;
+                right = NULL;
+                _OPTIMIZATION_ = true;
+                break;
+            }
+            case MINUS:
+            {
+                flag = NUM;
+                value = left->value - right->value;
+                delete left;
+                delete right;
+                left = NULL;
+                right = NULL;
+                _OPTIMIZATION_ = true;
+                break;
+            }
+            case PROD:
+            {
+                flag = NUM;
+                value = left->value * right->value;
+                delete left;
+                delete right;
+                left = NULL;
+                right = NULL;
+                _OPTIMIZATION_ = true;
+                break;
+            }
+            case PART:
+            {
+                if (left->value % right->value == 0)
+                {
+                    flag = NUM;
+                    value = left->value/right->value;
+                    delete left;
+                    delete right;
+                    left = NULL;
+                    right = NULL;
+                    _OPTIMIZATION_ = true;
+                }
+                break;
+            }
+            default:
+            {
+                printf("Error func %d in opt const\n", value);
+                break;
+            }
+        }
+    }
+    if (flag == FUNC && value == LN)
+    {
+        if (right->value == 1)
+        {
+            flag = NUM;
+            value = 0;
+            delete left;
+            delete right;
+            left = NULL;
+            right = NULL;
+            _OPTIMIZATION_ = true;
+        }
+    }
+    if (right && flag == FUNC && value == COS)
+    {
+        if (right->value == 0)
+        {
+            flag = NUM;
+            value = 1;
+            delete right;
+            right = NULL;
+            left = NULL;
+            _OPTIMIZATION_ = true;
+        }
+    }
+    if (flag == FUNC && value == SIN)
+    {
+        if (right->value == 0)
+        {
+            flag = NUM;
+            value = 1;
+            delete right;
+            right = NULL;
+            left = NULL;
+            _OPTIMIZATION_ = true;
+        }
+    }
+}
+
+
+void Node :: opt_simple()
+{
+    if (left)
+    {
+        left->opt_simple();
+    }
+    if (right)
+    {
+        right->opt_simple();
+    }
+
+    if (left && right && flag == FUNC && value == PROD && left->flag == NUM && left->value == 1) //1*A +
+    {
+        flag = right->flag;
+        value = right->value;
+        Node* tmp = right;
+        delete left;
+        left = NULL;
+        left = right->left;
+        right = right->right;
+        tmp->left = NULL;
+        tmp->right = NULL;
+        delete tmp;
+        _OPTIMIZATION_ = true;
+    }
+    if (left && right && flag == FUNC && value == PROD && left->flag == NUM && left->value == 0) //0*A
+    {
+        flag = NUM;
+        value = 0;
+        delete left;
+        left = NULL;
+        delete right;
+        right = NULL;
+        _OPTIMIZATION_ = true;
+    }
+    if (left && right && flag == FUNC && value == PROD && right->flag == NUM && right->value == 0) //A*0
+    {
+        flag = NUM;
+        value = 0;
+        delete left;
+        left = NULL;
+        delete right;
+        right = NULL;
+        _OPTIMIZATION_ = true;
+    }
+    if (left && right && flag == FUNC && value == PROD && right->flag == NUM && right->value == 1) //A*1 ?
+    {
+        flag = left->flag;
+        value = left->value;
+        Node* tmp = left;
+        delete right;
+        right = NULL;
+        right = left->right;
+        left = left->left;
+        tmp->left = NULL;
+        tmp->right = NULL;
+        delete tmp;
+        _OPTIMIZATION_ = true;
+    }
+    if (left && right && flag == FUNC && value == PLUS && right->flag == NUM && right->value == 0) //A+0 +
+    {
+        flag = left->flag;
+        value = left->value;
+        Node* tmp = left;
+        delete right;
+        right = NULL;
+        right = left->right;
+        left = left->left;
+        tmp->left = NULL;
+        tmp->right = NULL;
+        delete tmp;
+        _OPTIMIZATION_ = true;
+    }
+    if (left && right && flag == FUNC && value == PLUS && left->flag == NUM && left->value == 0) //0+A +
+    {
+        flag = right->flag;
+        value = right->value;
+        Node* tmp = right;
+        delete left;
+        left = NULL;
+        left = right->left;
+        right = right->right;
+        tmp->right = NULL;
+        tmp->left = NULL;
+        delete tmp;
+        _OPTIMIZATION_ = true;
+    }
+    if (left && right && flag == FUNC && value == MINUS && right->flag == NUM && right->value == 0) //A-0 +
+    {
+        flag = left->flag;
+        value = left->value;
+        Node* tmp = left;
+        delete right;
+        right = NULL;
+        right = left->right;
+        left = left->left;
+        tmp->right = NULL;
+        tmp->left = NULL;
+        delete tmp;
+        _OPTIMIZATION_ = true;
+    }
+    if (left && right && flag == FUNC && value == MINUS && left->flag == NUM && left->value == 0) //0-A +
+    {
+        value = PROD;
+        left->value = -1;
+        _OPTIMIZATION_ = true;
+    }
+    if (left && right && flag == FUNC && value == PART && left->flag == NUM && left->value == 0) //0/A
+    {
+        flag = NUM;
+        value = 0;
+        delete left;
+        left = NULL;
+        delete right;
+        right = NULL;
+        _OPTIMIZATION_ = true;
+    }
+}
+
+
+Node :: ~Node()
 {
     if (left)
     {

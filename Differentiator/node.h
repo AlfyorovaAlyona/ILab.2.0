@@ -21,6 +21,10 @@ enum FUNC
     PLUS = 5,
     MINUS = 6,
     PROD = 7,
+    PART = 13,
+    SIN = 14,
+    COS = 15,
+    LN = 16,
 };
 
 enum VARS
@@ -36,19 +40,26 @@ struct Node {
     int value;
 
     Node(int fl, int val); //constructor
-
     Node* add_left(int fl, int val);
     Node* add_right(int fl, int val);
+
     void print_in_tex(FILE* f);
     void print_node_in_tex(FILE* f);
+    void dot(FILE* f);
+    void print_in_dot(FILE* f);
+    void opt_const();
+    void opt_simple();
+
     void func_tex(FILE* f);
     void vars_tex(FILE* f);
     void num_tex(FILE* f);
-    void dot(FILE* f);
-    void print_in_dot(FILE* f);
     const char* inDot();
 
     ~Node(); //distructor
+
+
+
+
 };
 #include "node.cpp"
 #endif //__NODE__

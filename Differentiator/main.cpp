@@ -1,42 +1,60 @@
 
+bool _OPTIMIZATION_ = true;
 #include "node.h"
+#include "TexOutput.h"
 #include "differ.h"
+#include "PGD.h"
 
 int main()
 {
-    FILE* ftex;
-    FILE* fout;
-    FILE* fin;
-    ftex = fopen("file.tex", "at");
-    fout = fopen("root.txt", "wt");
-    fin = fopen("diffroot.txt", "wt");
+    grammar Gramm;
+    Gramm.str = "(30-x*x*x)/((40-x)*(10/x))";
+    Node* root = Gramm.GetG();
 
-    Node* root = new Node(FUNC, PROD);
-    Node* diffroot;
+    if (root)
+    {
+        FILE* ftex = fopen("file.tex", "at");
+        FILE* fout = fopen("root.txt", "wt");
+        FILE* fin = fopen("diffroot.txt", "wt");
+        FILE* f = fopen("baddiffroot.txt", "wt");
 
-    root->add_left(FUNC , PLUS);
-    root->add_right(FUNC , PROD);
-    root->left->add_left(NUM ,3000);
-    root->left->add_right(NUM ,9000);
-    root->right->add_left(VARS , X_FLAG);
-    root->right->add_right(VARS , X_FLAG);
+        Tex texer;
+        texer.printpreambula(ftex);
+        Node* diffroot;
+        root->dot(fout);
 
-    root->dot(fout);
+        fprintf(ftex, "Функция, которую необходимо продифференцировать: \\\\");
+        texer.print_in_tex(ftex, root);
+        texer.rule(ftex, root);
 
-    root->print_in_tex(ftex);
+        Differentiator differ;
+        diffroot = differ.Diff(root, ftex);
 
-    Differentiator differ;
-    diffroot = differ.Diff(root);
+        diffroot->dot(f);
 
-    fprintf(ftex, "Результат:");
+        fprintf(ftex, "Итого: \\\\");
+        texer.print_in_tex(ftex, diffroot);
 
-    diffroot->dot(fin);
-    diffroot->print_in_tex(ftex);
+        while (_OPTIMIZATION_) {
+            diffroot->opt_const();
+            diffroot->opt_simple();
+        }
 
-    fprintf(ftex, "\\end{document}");
-    fclose(ftex);
+        fprintf(ftex, "Итого, путём несложных математических преобразований: ");
+        texer.print_in_tex(ftex, diffroot);
+
+        diffroot->dot(fin);
+
+        fprintf(ftex, "\\end{document}");
+        fclose(ftex);
+    }
+    else
+    {
+        printf("Error FUNC in str\n");
+    }
     return 0;
 }
+
 
 
 
